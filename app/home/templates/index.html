@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Post{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    
+    <h1 class="display-4 mb-5 mt-5" style = "text-align : center">Track Your Investments in One Place</h1>
+    <div class="container-md">
+                
+            <h5 class="display-5 mb-5 mt-5" style = "text-align : center">
+                <p style = "color:rgb(250,105,18)">Log in to explore your funds</p>
+            </h5>
+            <div class="container-md p-10 table-coin-info">
+                <table class="table" style = "color:white">
+                    <thead>
+                        <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Symbol</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Market Cap</th>
+                        <th scope="col">24h Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for coin in coins %} 
+                        <tr>
+                        <th scope="row">{{ coin["market_cap_rank"]}}</th>
+                        <td>{{ coin["name"] }} </td>
+                        <td>{{ coin["symbol"].upper() }} </td>
+                        <td>{{ "{:,}".format(coin["current_price"]) }} $ </td>
+                        <td>{{ "{:,}".format(coin["market_cap"]) }} $ </td>
+                        <td>{{ "{:.2f}".format(coin['price_change_percentage_24h'])
+                            }} % </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    <div class="object-center">
+                        <button class="btn btn-create-account fs-5"  type="submit" style ="color: white; width: 20vh" > 
+                            <a class = "link" href="{{url_for('live-prices.overview')}}" > See more 
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+</div>
+
+{% endblock %}

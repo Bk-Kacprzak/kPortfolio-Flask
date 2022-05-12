@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Portfolio{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="container form-container">
+        <div class="col">
+            <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Add New Asset</p>
+        </div>
+        <div class="col mt-4">
+                <label for="assetName" class="form-label fw-lighter ml-2 mb-3" style = "letter-spacing: 2px;">Asset name</label>
+                <input id="assetName" name = "assetName" type="text" class="form-control form-input" 
+                placeholder= "Asset Name" required>
+        </div>
+        <div class="col mt-4">
+                <label for="assetAmount" class="form-label fw-lighter ml-2 mb-3" style = "letter-spacing: 2px;"> Amount </label>
+                <input id="assetAmount" name = "assetAmount" type="text" class="form-control form-input" 
+                placeholder= "Asset Amount" required>
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8 mt-4">
+                    <button class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
+                    <button class="button form-btn" type ="submit" > SAVE </button>
+            </div>
+        </div>
+</div>
+<div class="container-fluid content-container">
+
+    <div class="container-sm " style = "background: #212121; height: 80vh; padding: 20px;border-radius: 50px; margin-top: 10vh;">
+        <div class="sidebar-container-left">
+            <div class="d-flex bd-highlight mb-3 align-items-start">
+                    <p class="fw-lighter fs-1 mt-3 ml-3 mb-0" style = "width: 100%;">Portfolios</p>
+            </div>
+            <div class="line"></div>
+            <ul class="list-group mt-5">
+                {% for portfolio in portfolios %}
+                    <li class="list-group-item portfolio-item" style ="color:white;">
+                        </a><p class="fw-lighter fs-4 mt-3 ml-3 mb-0" style = "width: 100%;">{{portfolio.name}}</p>
+                    </li>
+                {% endfor %}
+                  </ul>
+        </div>       
+        <div class="sidebar-container-right">
+                <table class="table" style = "color:white">
+                        <thead>
+                            <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Symbol</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Entry Price</th>
+                            <th scope="col">Profit</th>
+                            <th scope="col">24h Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asset in assets %}  -->
+                                <tr>
+                                <th scope="row">{{ asset["market_cap_rank"]}}</th>
+                                <td>{{ asset["rank"] }} </td>
+                                <td>{{ asset["symbol"].upper() }} </td>
+                                <td>{{ "{:,}".format(asset["amount"]) }} </td>
+                                <td>{{ "{:,}".format(asset["entry_price"]) }} $ </td>
+                                <td>{{ "{:,}".format(asset["profit"]) }} $ </td>
+                                <td>{{ "{:.2f}".format(coin['price_change_percentage_24h']) }} % </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                </table>
+        </div>
+
+        <button class="form-btn add-button button-container" style = "float:right">ADD ASSET</button>
+        
+    </div>  
+</div>
+
+<script src="{{url_for('static', filename='events.js')}}"></script>
+
+{% endblock %}
