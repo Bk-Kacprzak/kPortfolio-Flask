@@ -9,37 +9,66 @@
             <p class="fs-2 fw-lighter" style = "text-align: center;">Register </p>
 
         <form method = "post">
+                {{ form.hidden_tag() }}
+
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input name = "username" type="username" class="form-control" id="username" aria-describedby="usernmaeHelp">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input name = "email"  class="form-control" id="email" aria-describedby="emailHelp">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
                 {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
-                 {% if errors %}
-                    {% for msg in errors %} 
-                        <p class = "auth-error-message" >
-                        {{msg}}
-                    {% endfor %}
-                {% endif %}
+                    {% if errors %}
+                        {% for msg in errors %} 
+                            <p class = "auth-error-message" >
+                            {{msg}}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
                 {% endwith %}
-
-            </p>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label" required>Password</label>
-                <input name = "password" type="password" class="form-control" id="password">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control") }}
+                    {% with errors = get_flashed_messages(category_filter=["password-error"]) %}
+                    {% if errors %}
+                        {% for msg in errors %} 
+                            <p class = "auth-error-message" >
+                            {{msg}}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             </div>
 
-            <div class="mb-3 form-check">
+            <div class="mb-3">
+                    {{ form.confirm.label(class="form-label") }}
+                    {{ form.confirm(class="form-control") }}
+                    {% for field in errors %}
+                    {% for message in field.messages %}
+                    <p class = "auth-error-message" > {{ message }}</p>
+                    {% endfor %}
+                  {% endfor %}
+                    <!-- {% with errors = get_flashed_messages(category_filter=["password-error"]) %}
+                    {% if errors %}
+                        {% for msg in errors %} 
+                            
+                            {{msg}}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %} -->
+            </div>
+
+            <!-- <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="check-out">
                 <label class="form-check-label" for="check-out" required>Check me out</label>
-            </div>
+            </div> -->
+            {{ form.submit(class="btn btn-create-account btn-outline-dark")}} 
 
-            <button class="btn btn-create-account btn-outline-dark" type="submit" >Create Account</button>
             <!-- <button type="submit" class="btn btn-primary">Submit</q> -->
         </form>
     </div>
