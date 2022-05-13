@@ -10,85 +10,99 @@ from flask_login import login_user, current_user
 import functools
 import is_safe_url 
 
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, PasswordField, FormField
-from wtforms.validators import DataRequired, Email, EqualTo
-
 from sqlalchemy.exc import IntegrityError
 import sqlite3
-
+import os 
 
 from app.sqla import sqla
 from app.models.user import User
 from app.utils import redirect_to_next_page
 
+from app.auth.forms import LoginForm, RegisterForm
+
+
 bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates")
 
 @bp.route('/login', methods = ['GET', 'POST']) 
 def login() :
-    if request.method == "POST":
-        try:
-            email = request.form["email"]
-            password = request.form["password"]
+    email = None 
+    password = None 
+    form = LoginForm()
 
-            user = User.query.filter_by(email = email).first()
-            print(user, flush = True)
-            error = None 
-            if user is None: 
-                error ="Incorrect email address."
-                flash(error, "email-error")
+    if request.method == "POST": 
+        if form.validate_on_submit() : 
 
-            elif not user.correct_password(password):
-                error = "Incorrect password."
-                flash(error, "password-error")
-            
-            if error is None: 
-                login_user(user)
-                return redirect_to_next_page('index')
+            try : 
+                email = form.email.data
+                password = form.password.data
+                form.email.data = ''
+                form.password.data = '' 
 
-        except ValueError as e:
-            flash(str(e), "error")
-        # get login and password
-        # find user with specific login in db 
-        # if found -> get password hash from db 
-        # hash current password and check if they are equal
-        # if equal -> authorize 
+                user = User.query.filter_by(email = email).first()
+                error = None 
 
+                if user is None: 
+                    error ="Incorrect email address."
+                    flash(error, "email-error")
 
-    return render_template("login.html")
+                elif not user.correct_password(password):
+                    error = "Incorrect password."
+                    flash(error, "password-error")
+                
+                if error is None: 
+                    login_user(user)
+                    return redirect_to_next_page('index')
+                    
+
+            except ValueError as e: 
+                flash(str(e), "error") 
+
+        return render_template("login.html", form = form, email = email, password = password)
+    return render_template("login.html", form = form, email = email, password = password)
 
 
 @bp.route('/register', methods = ['GET', 'POST']) 
 def register():
-    if request.method == "POST": 
-        try: 
-            user = User(
-                username = request.form["username"],
-                email = request.form["email"],
-                password = request.form["password"]
-            )
-        except ValueError as e :
-            flash(str(e), "email-error")
-            return render_template("register.html")
-        
-        sqla.session.add(user) 
-        sqla.session.commit()
-    
-        return redirect(url_for("auth.login"))
-    
-    
-        # check if email already exists in db
-        # check password strength
-        # create User record in try except block
-        # push it to db 
-        # redirect to login
-        # TODO: redirect to /register/confirmation to inform user confirmation email was sent 
+    name = None
+    email = None 
+    password = None 
+    confirm = None
+    form = RegisterForm()
 
+    if request.method == "POST": 
+        if form.validate_on_submit() : 
+
+            try: 
+                name = form.name.data
+                email = form.email.data 
+                password = form.password.data 
+                user = User(
+                    username = name,
+                    email = email,
+                    password = password
+                )
+            except ValueError as e :
+                message = e.args[0]
+                error_type = e.args[1] 
+                flash(message, error_type)
+                return render_template("register.html", form = form, name = name, email = email, password = password, confirm = confirm)
+
+
+        
+            sqla.session.add(user) 
+            sqla.session.commit()
+            return redirect(url_for("auth.login"))
+
+        errors = [{'field': key, 'messages': form.errors[key]} for key in form.errors.keys()] if form.errors else []    
+
+        return render_template("register.html", form = form, name = name, email = email, password = password, confirm = confirm, errors = errors)
 
     if current_user.is_authenticated : 
         return redirect_to_next_page("index")
 
-    return render_template("register.html")
+    return render_template("register.html", form = form)
+
+    
 
 @bp.route('/logout', methods = ['GET'])
 def logout() : 
