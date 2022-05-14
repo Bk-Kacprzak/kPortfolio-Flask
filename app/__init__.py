@@ -18,7 +18,7 @@ def create_app() :
     # register all blueprints
     import app.home.views as home
     import app.auth.views as auth
-    import app.user.portfolio_tracker as portfolio
+    import app.user.views as portfolio
     import app.home.live_prices as live_prices
     app.register_blueprint(auth.bp)
     app.register_blueprint(portfolio.bp)
