@@ -22,19 +22,19 @@ class User(UserMixin, sqla.Model) :
             raise ValueError(f'{key.capitalize()} is required.')
 
         if key == 'email' : 
-            self.validate_is_unique(key, value, error_message = "This email is already registered.")
+            self.validate_is_unique(key, value, error_message = "This email is already registered.", error_type = "email-error")
 
         if key == 'password': 
             value = generate_password_hash(value) 
         return value 
     
-    def validate_is_unique(self, key, value, error_message = None) : 
+    def validate_is_unique(self, key, value, error_message = None, error_type = None) : 
         if  (User
         .query
         .filter_by(**{key: value})
         .first() is not None):
             print(f"{value} already in db!!!!", flush = True)
-            raise ValueError(error_message)
+            raise ValueError(error_message, error_type)
 
             if not error_message: 
                 error_message = f'{key} must be unique.'
