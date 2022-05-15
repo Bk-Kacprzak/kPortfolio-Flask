@@ -14,6 +14,8 @@ from app.sqla import sqla
 from app.utils import redirect_to_next_page
 
 from app.models.portfolio import Portfolio
+from app.models.asset import Asset 
+
 from app.user.forms import PortfolioForm, AssetForm
 
 bp = Blueprint("portfolio", __name__,url_prefix = "/portfolio", template_folder="templates")
@@ -36,17 +38,14 @@ def portfolio_required(view) :
 @login_required
 def portfolio():
     form = PortfolioForm()
-    if request.method == "POST":
-        add_new_portfolio(form)
 
-    print(Portfolio.query.filter_by(user_id = current_user.id).first(), flush = True)
+    if request.method == "POST":
+        return add_new_portfolio(form)
+
     if Portfolio.query.filter_by(user_id = current_user.id).first() is None:
         return render_template("portfolio.html", form = form)
 
-    # return redirect(url_for("portfolio.overview"), form = form)
     return redirect(url_for("portfolio.overview"))
-
-
 
 @bp.route('/overview', methods = ['GET', 'POST'])
 @login_required
@@ -54,17 +53,52 @@ def portfolio():
 def overview(): 
     portfolio_form = PortfolioForm()
     asset_form = AssetForm()
-    assets = [] 
-    form = None
+
     portfolios = Portfolio.query.filter_by(user_id = current_user.id).all()
+    assets = Asset.query.filter_by(portfolio_id = portfolios[0].id).all()
+    asset_form.portfolio.choices = [portfolio.name for portfolio in portfolios]
+
+    if portfolio_form.validate_on_submit() : 
+        return add_new_portfolio(portfolio_form) 
+    elif asset_form.validate_on_submit() : 
+        return add_new_asset(asset_form)
 
     return render_template(
                             "overview.html", 
                             portfolio_form = portfolio_form, 
                             asset_form = asset_form, 
                             portfolios = portfolios, 
-                            assets = assets,
+                            assets = assets
     )
+
+def add_new_asset(form): 
+    portfolios = Portfolio.query.filter_by(user_id = current_user.id)
+    try: 
+        name = form.asset_name.data
+        amount = form.amount.data
+        
+        transaction_date = form.date.data
+        entry_price = form.price.data
+        submit = form.submit.data
+        portfolio = form.portfolio.data
+        portfolio_id = Portfolio.query.filter_by(user_id = current_user.id, name = portfolio).first().id
+
+        asset = Asset(
+            name = name,
+            amount = amount,
+            # transaction_date = 0,
+            entry_price = 20,
+            portfolio_id = portfolio_id) 
+
+    # TODO: validate data and set specific error type to flash message
+    except ValueError as e: 
+        return redirect(url_for("portfolio.overview"))
+
+    sqla.session.add(asset) 
+    sqla.session.commit()
+
+
+    return redirect(url_for("portfolio.overview"))
 
 def add_new_portfolio(form) : 
     portfolio_name = None
@@ -77,7 +111,7 @@ def add_new_portfolio(form) :
             portfolio = Portfolio(
                 name = portfolio_name, 
                 total_cost = total_cost, 
-                    user_id = current_user.id)
+                user_id = current_user.id)
 
 
         except ValueError as e: 
