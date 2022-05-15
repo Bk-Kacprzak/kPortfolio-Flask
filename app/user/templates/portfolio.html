@@ -6,38 +6,50 @@
 
 {% block content %}
 
-<form method = "post" class="new-portfolio">
+<form method = "post" action = "{{ url_for('portfolio.portfolio' ) }}" class="new-portfolio">
     {{ form.hidden_tag() }}
 
     <div class="container add-portfolio-form form-container">
-            <div class="col">
-                <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Create New Portfolio</p>
-            </div>
-            <div class="col mt-4">
-                    {{ form.portfolio_name.label(class="form-label fw-lighter ml-2 mb-3")}}
-                    {{ form.portfolio_name(class="form-control form-input", placeholder = "Portfolio Name")}}
-
-            </div>
-            <div class="col mt-4">
-
-                    {{ form.total_cost.label(class="form-label fw-lighter ml-2 mb-3")}}
-                    {{ form.total_cost(class="form-control form-input", placeholder = "Total Cost")}}
-                    {% for field in errors %}
-                        {% for message in field.messages %}
-                        <p class = "auth-error-message" > {{ message }}</p>
-                        {% endfor %}
+        <div class="col">
+            <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Create New Portfolio</p>
+        </div>
+        <div class="col mt-4">
+            {{ form.portfolio_name.label(class="form-label fw-lighter ml-2 mb-3")}}
+            {{ form.portfolio_name(class="form-control form-input", placeholder = "Portfolio Name")}}
+            
+            {% with errors = get_flashed_messages(category_filter=["name-error"]) %}
+            {% if errors %}
+                {% for msg in errors %} 
+                <p class = "auth-error-message" >
+                    {{ msg }}
+                </p>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}   
+        </div>
+        <div class="col mt-4">
+            {{ form.total_cost.label(class="form-label fw-lighter ml-2 mb-3")}}
+            {{ form.total_cost(class="form-control form-input", placeholder = "Total Cost")}}
+            {% with errors = get_flashed_messages(category_filter=["cost-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
                     {% endfor %}
+                {% endif %}
+            {% endwith %}  
 
-            </div>
-            <div class="row">
-                <div class="col-4"></div>
-                <div class="col-8 mt-4">
-                        <button onclick = "hideForm(['.add-portfolio-form'])" class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
-                        {{ form.submit(class="button form-btn")}} 
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8 mt-4">
+                    <button onclick = "hideForm(['.add-portfolio-form'])" class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
+                    {{ form.submit(class="button form-btn")}} 
 
-                     
-                </div>
+                    
             </div>
+        </div>
     </div>
 </form>
 
