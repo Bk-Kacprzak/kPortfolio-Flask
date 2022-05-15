@@ -6,63 +6,106 @@
 
 {% block content %}
 
-<form method = "post" action = "{{ url_for('portfolio.portfolio') }}" class="new-portfolio">
+<form method = "post" action = "{{ url_for('portfolio.overview') }}" class="new-portfolio">
         {{ portfolio_form.hidden_tag() }}
     
-        <div class="container add-portfolio-form form-container">
-                <div class="col">
-                    <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Create New Portfolio</p>
-                </div>
-                <div class="col mt-4">
-                        {{ portfolio_form.portfolio_name.label(class="form-label fw-lighter ml-2 mb-3")}}
-                        {{ portfolio_form.portfolio_name(class="form-control form-input", placeholder = "Portfolio Name")}}
-    
-                </div>
-                <div class="col mt-4">
-    
-                        {{ portfolio_form.total_cost.label(class="form-label fw-lighter ml-2 mb-3")}}
-                        {{ portfolio_form.total_cost(class="form-control form-input", placeholder = "Total Cost")}}
-                        {% for field in errors %}
-                            {% for message in field.messages %}
-                            <p class = "auth-error-message" > {{ message }}</p>
-                            {% endfor %}
-                        {% endfor %}
-    
-                </div>
-                <div class="row">
-                    <div class="col-4"></div>
-                    <div class="col-8 mt-4">
-                            <button onClick="hideForm(['.add-portfolio-form', '.add-asset-form'])" class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
-                            {{ portfolio_form.submit(class="button form-btn")}} 
-    
-                         
-                    </div>
-                </div>
+    <div class="container add-portfolio-form form-container">
+        <div class="col">
+            <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Create New Portfolio</p>
         </div>
+        <div class="col mt-4">
+                {{ portfolio_form.portfolio_name.label(class="form-label fw-lighter ml-2 mb-3")}}
+                {{ portfolio_form.portfolio_name(class="form-control form-input", placeholder = "Portfolio Name")}}
+                {% with errors = get_flashed_messages(category_filter=["name-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}  
+        </div>
+        <div class="col mt-4">
+
+            {{ portfolio_form.total_cost.label(class="form-label fw-lighter ml-2 mb-3")}}
+            {{ portfolio_form.total_cost(class="form-control form-input", placeholder = "Total Cost")}}
+            {% with errors = get_flashed_messages(category_filter=["cost-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}  
+
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8 mt-4">
+                    <button onClick="hideForm(['.add-portfolio-form', '.add-asset-form'])" class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
+                    {{ portfolio_form.submit(class="button form-btn")}} 
+
+            </div>
+        </div>
+    </div>
 </form>
+<form method = "post" action = "{{ url_for('portfolio.overview' ) }}" class="new-portfolio">
+    {{ asset_form.hidden_tag() }}
     
-<div class="container form-container add-asset-form">
+    <div class="container form-container add-asset-form">
         <div class="col">
             <p class="fw-light fs-2 " style = "margin-top: 20px;text-align: center; color: rgb(250,105,18);" >Add New Asset</p>
         </div>
         <div class="col mt-4">
-                <label for="assetName" class="form-label fw-lighter ml-2 mb-3" style = "letter-spacing: 2px;">Asset name</label>
-                <input id="assetName" name = "assetName" type="text" class="form-control form-input" 
-                placeholder= "Asset Name" required>
+            {{ asset_form.portfolio.label(class="form-label fw-lighter ml-2 mb-3", style = "letter-spacing: 2px;")}}
+            {{ asset_form.portfolio(class = "form-control form-input" ) }}
+
         </div>
+
         <div class="col mt-4">
-                <label for="assetAmount" class="form-label fw-lighter ml-2 mb-3" style = "letter-spacing: 2px;"> Amount </label>
-                <input id="assetAmount" name = "assetAmount" type="text" class="form-control form-input" 
-                placeholder= "Asset Amount" required>
+            {{ asset_form.asset_name.label(class="form-label fw-lighter ml-2 mb-3", style = "letter-spacing: 2px;") }}
+            {{ asset_form.asset_name(class="form-control form-input", placeholder = "Asset Name") }}
         </div>
-        <div class="row">
+
+        <div class="col mt-4">
+            {{ asset_form.price.label(class="form-label fw-lighter ml-2 mb-3") }}
+            {{ asset_form.price(class="form-control form-input", placeholder = "Price") }}
+            {% with errors = get_flashed_messages(category_filter=["price-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}  
+        </div>
+
+        <div class="col mt-4">
+            {{ asset_form.amount.label(class="form-label fw-lighter ml-2 mb-3") }}
+            {{ asset_form.amount(class="form-control form-input", placeholder = "Amount") }}
+            {% with errors = get_flashed_messages(category_filter=["cost-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}  
+        </div>
+        
+        <div class="row mb-4">
             <div class="col-4"></div>
             <div class="col-8 mt-4">
                     <button onClick="hideForm(['.add-portfolio-form', '.add-asset-form'])" class="button cancel-button form-btn mr-2" style = "background:none; color:white;" type="button"> CANCEL </button>
                     <button class="button form-btn" type ="submit" > SAVE </button>
             </div>
         </div>
-</div>
+    </div>
+</form>
 <div class="container-fluid content-container">
 
     <div class="container-sm " style = "background: #212121; height: 80vh; padding: 20px;border-radius: 50px; margin-top: 10vh;">
@@ -93,16 +136,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for asset in assets %}  -->
-                                <tr>
-                                <th scope="row">{{ asset["market_cap_rank"]}}</th>
-                                <td>{{ asset["rank"] }} </td>
-                                <td>{{ asset["symbol"].upper() }} </td>
-                                <td>{{ "{:,}".format(asset["amount"]) }} </td>
-                                <td>{{ "{:,}".format(asset["entry_price"]) }} $ </td>
-                                <td>{{ "{:,}".format(asset["profit"]) }} $ </td>
-                                <td>{{ "{:.2f}".format(coin['price_change_percentage_24h']) }} % </td>
-                                </tr>
+                            {% for asset in assets %} 
+
+                           
                             {% endfor %}
                         </tbody>
 
