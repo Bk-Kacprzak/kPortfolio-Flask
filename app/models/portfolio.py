@@ -7,17 +7,16 @@ class Portfolio(sqla.Model) :
     name = sqla.Column(sqla.String(64), nullable = False)
     total_cost = sqla.Column(sqla.Integer, nullable = True)
     user_id = sqla.Column(sqla.Integer,sqla.ForeignKey("user.id"), nullable  = False)
-    # user = sqla.relationship("User", backref= sqla.backref('portfolios', lazy = True)) ->> backref available in user.py 
-    
-    # assets = sqla.relationship('Asset', backref = sqla.backref('portoflio_id', lazy=True)) #again, one portfolio to many assets 
-    user = sqla.relationship('User', backref = sqla.backref('portfolios'))
-    # TODO:
 
-    @validates('portfolio_name')
-    def validate_not_empty(self, key, value):  
-        if not value :
-            raise ValueError(f'{key.capitalize()} is required.')
-        return value
+    user = sqla.relationship('User', backref = sqla.backref('portfolios'))
+
+    @validates('portfolio_name') 
+    def validate_is_unique(self, key, value): 
+        names = [portfolio.name for portfolio in Portfolio.query.filter_by(user_id = value).all()]
+        if name in names: 
+            raise ValueError(f"{key} name must be unique.")
+        
+    
 
 
     
