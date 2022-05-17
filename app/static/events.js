@@ -1,7 +1,4 @@
-// const button = document.querySelector("button.add-button");
-// const newPortfolioForm = document.querySelector(".form-container");
 const mainContainer = document.querySelector(".content-container");
-const cancelButton = document.querySelector(".cancel-button");
 
 const showForm = (formToOpenClass, anotherFormClass = null) => { 
     if (anotherFormClass != null) { 
@@ -20,6 +17,18 @@ const hideForm = (formClasses) => {
         form = document.querySelector(value) 
         form.setAttribute("style", "display: none");
     })
-    // form = document.querySelector(formClass) 
     mainContainer.setAttribute("style", "opacity: 1");
 }
+
+const blockTypeNonNumericInput = (event) => { 
+    // TODO: fix bug - paste shortcut works and enable to paste non-numeric input
+    if (event.key.length === 1 && /\D/.test(event.key)) {
+        event.preventDefault();
+      }
+
+    if ( this !== event.target && 
+    ( /textarea|select/i.test( event.target.nodeName ) ||
+        event.target.type === "text") ) {
+            return;
+    }
+}   
