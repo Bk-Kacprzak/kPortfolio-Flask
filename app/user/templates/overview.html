@@ -27,9 +27,11 @@
                 {% endwith %}  
         </div>
         <div class="col mt-4">
-
             {{ portfolio_form.total_cost.label(class="form-label fw-lighter ml-2 mb-3")}}
-            {{ portfolio_form.total_cost(class="form-control form-input", placeholder = "Total Cost")}}
+            {{ portfolio_form.total_cost(
+                class="form-control form-input", 
+                placeholder = "Total Cost", 
+                onkeypress = "blockTypeNonNumericInput(event, this)")}}
             {% with errors = get_flashed_messages(category_filter=["cost-error"]) %}
                 {% if errors %}
                     {% for msg in errors %} 
@@ -60,7 +62,7 @@
         </div>
         <div class="col mt-4">
             {{ asset_form.portfolio.label(class="form-label fw-lighter ml-2 mb-3", style = "letter-spacing: 2px;")}}
-            {{ asset_form.portfolio(class = "form-control form-input" ) }}
+            {{ asset_form.portfolio(class = "form-control form-input" )}}
 
         </div>
 
@@ -71,7 +73,10 @@
 
         <div class="col mt-4">
             {{ asset_form.price.label(class="form-label fw-lighter ml-2 mb-3") }}
-            {{ asset_form.price(class="form-control form-input", placeholder = "Price") }}
+            {{ asset_form.price(
+                class="form-control form-input", 
+                placeholder = "Price",
+                onkeypress = "blockTypeNonNumericInput(event, this)") }}
             {% with errors = get_flashed_messages(category_filter=["price-error"]) %}
                 {% if errors %}
                     {% for msg in errors %} 
@@ -84,9 +89,29 @@
         </div>
 
         <div class="col mt-4">
-            {{ asset_form.amount.label(class="form-label fw-lighter ml-2 mb-3") }}
-            {{ asset_form.amount(class="form-control form-input", placeholder = "Amount") }}
+            {{ asset_form.cost.label(class="form-label fw-lighter ml-2 mb-3") }}
+            {{ asset_form.cost(
+                class="form-control form-input", 
+                placeholder = "Cost",
+                onkeypress = "blockTypeNonNumericInput(event, this)") }}
             {% with errors = get_flashed_messages(category_filter=["cost-error"]) %}
+                {% if errors %}
+                    {% for msg in errors %} 
+                    <p class = "auth-error-message" >
+                        {{ msg }}
+                    </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}  
+        </div>
+
+        <div class="col mt-4">
+            {{ asset_form.amount.label(class="form-label fw-lighter ml-2 mb-3") }}
+            {{ asset_form.amount(
+                class="form-control form-input", 
+                placeholder = "Amount", 
+                onkeypress = "blockTypeNonNumericInput(event, this)") }}
+            {% with errors = get_flashed_messages(category_filter=["amount-error"]) %}
                 {% if errors %}
                     {% for msg in errors %} 
                     <p class = "auth-error-message" >
