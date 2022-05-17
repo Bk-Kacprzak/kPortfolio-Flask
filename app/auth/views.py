@@ -55,7 +55,8 @@ def login() :
                     
 
             except ValueError as e: 
-                flash(str(e), "error") 
+                return e
+                # flash(str(e), "error") 
 
         return render_template("login.html", form = form, email = email, password = password)
     return render_template("login.html", form = form, email = email, password = password)
@@ -76,6 +77,10 @@ def register():
                 name = form.name.data
                 email = form.email.data 
                 password = form.password.data 
+                form.name.data = ''
+                form.email.data = ''
+                form.password.data = ''
+                
                 user = User(
                     username = name,
                     email = email,
