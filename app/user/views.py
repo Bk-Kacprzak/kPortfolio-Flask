@@ -15,6 +15,7 @@ from app.utils import redirect_to_next_page
 
 from app.models.portfolio import Portfolio
 from app.models.asset import Asset 
+from app.models.transaction import AssetTransaction
 
 from app.user.forms import PortfolioForm, AssetForm
 
@@ -74,28 +75,58 @@ def overview():
 def add_new_asset(form): 
     portfolios = Portfolio.query.filter_by(user_id = current_user.id)
     try: 
+
+        # Asset info
         name = form.asset_name.data
-        amount = form.amount.data
+        cost = form.cost.data
         
-        transaction_date = form.date.data
+        # transaction info 
+        amount = form.amount.data
+        # transaction_date = form.date.data
         entry_price = form.price.data
-        submit = form.submit.data
         portfolio = form.portfolio.data
+        
+
         portfolio_id = Portfolio.query.filter_by(user_id = current_user.id, name = portfolio).first().id
 
-        asset = Asset(
-            name = name,
+        existing_asset = Asset.query.filter_by(name = name).first() 
+        new_asset = None
+
+        if existing_asset is None: 
+            new_asset = Asset(
+                portfolio_id = portfolio_id,
+                name = name, 
+                cost = cost, 
+                average_buy_price = entry_price,
+                total_amount = amount
+            )
+            
+            existing_asset = new_asset
+            
+        else: 
+            transaction_type = "BUY" #TODO: add button
+            existing_asset.update_holdings(amount, transaction_type, entry_price)
+
+        transaction = AssetTransaction (
+            asset_id = existing_asset.id, 
             amount = amount,
-            # transaction_date = 0,
-            entry_price = 20,
-            portfolio_id = portfolio_id) 
+            # transaction_date = transaction_date,
+            transaction_type = "BUY",
+            entry_price = entry_price
+            )
 
-    # TODO: validate data and set specific error type to flash message
+        print(transaction, flush = True)
+
+ 
+
     except ValueError as e: 
-        return redirect(url_for("portfolio.overview"))
+        return e
+        # return redirect(url_for("portfolio.overview"))
 
-    sqla.session.add(asset) 
+    sqla.session.add(existing_asset) 
     sqla.session.commit()
+    
+    # print(AssetTransaction.query.filter_by().all(), flush = True)
 
 
     return redirect(url_for("portfolio.overview"))
@@ -120,7 +151,7 @@ def add_new_portfolio(form) :
 
         sqla.session.add(portfolio)
         sqla.session.commit()
-
+    
         return redirect(url_for("portfolio.overview"))
 
     errors = [{'field': key, 'messages': form.errors[key]} for key in form.errors.keys()] if form.errors else []    
